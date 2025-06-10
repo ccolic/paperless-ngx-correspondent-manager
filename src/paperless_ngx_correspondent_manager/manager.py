@@ -2,15 +2,26 @@
 Paperless-ngx Correspondent Manager
 
 This module provides the main PaperlessCorrespondentManager class for interacting with paperless-ngx.
+Requires Python 3.8+ with 'from __future__ import annotations' for type annotations compatibility.
 """
+
+from __future__ import annotations
 
 import json
 import sys
+import warnings
 from difflib import SequenceMatcher
 from urllib.parse import urljoin
 
 import requests
 import yaml
+
+# Suppress deprecation warnings for Python 3.9+
+warnings.filterwarnings(
+    "ignore",
+    category=DeprecationWarning,
+    module=r".*paperless_ngx_correspondent_manager.manager",
+)
 
 # Global configuration
 DEFAULT_SIMILARITY_THRESHOLD = 0.9
@@ -81,7 +92,7 @@ class PaperlessCorrespondentManager:
             print(yaml.dump(correspondents, default_flow_style=False, indent=2))
         else:
             # Default table format
-            print(f"\\nFound {len(correspondents)} correspondents:")
+            print(f"\nFound {len(correspondents)} correspondents:")
             print("-" * 80)
 
             for correspondent in correspondents:
@@ -225,11 +236,11 @@ class PaperlessCorrespondentManager:
             print("No exact duplicate correspondents found.")
             return
 
-        print(f"\\nFound {len(duplicates)} groups of exact duplicates:")
+        print(f"\nFound {len(duplicates)} groups of exact duplicates:")
         print("=" * 80)
 
         for i, group in enumerate(duplicates, 1):
-            print(f"\\nDuplicate Group {i}:")
+            print(f"\nDuplicate Group {i}:")
             print(f"Name: '{group[0]['name']}'")
             print("-" * 40)
 
@@ -253,12 +264,12 @@ class PaperlessCorrespondentManager:
             return
 
         print(
-            f"\\nFound {len(similar_groups)} groups of similar correspondents (threshold: {threshold}):"
+            f"\nFound {len(similar_groups)} groups of similar correspondents (threshold: {threshold}):"
         )
         print("=" * 80)
 
         for i, group in enumerate(similar_groups, 1):
-            print(f"\\nSimilar Group {i}:")
+            print(f"\nSimilar Group {i}:")
             print("-" * 50)
 
             # Calculate and show similarity scores within the group
@@ -295,12 +306,12 @@ class PaperlessCorrespondentManager:
             return
 
         print(
-            f"\\nFound {len(similar_pairs)} pairs of similar correspondents (threshold: {threshold}):"
+            f"\nFound {len(similar_pairs)} pairs of similar correspondents (threshold: {threshold}):"
         )
         print("=" * 80)
 
         for i, (corr1, corr2, similarity) in enumerate(similar_pairs, 1):
-            print(f"\\nSimilar Pair {i} (Similarity: {similarity:.3f}):")
+            print(f"\nSimilar Pair {i} (Similarity: {similarity:.3f}):")
             print(
                 f"  1. ID: {corr1['id']:>4} | Name: '{corr1['name']}' | Docs: {corr1.get('document_count', 0)}"
             )
@@ -411,7 +422,7 @@ class PaperlessCorrespondentManager:
 
         if success and merged_sources:
             print(
-                f"\\nSuccessfully merged {len(merged_sources)} correspondents into '{target_correspondent['name']}'"
+                f"\nSuccessfully merged {len(merged_sources)} correspondents into '{target_correspondent['name']}'"
             )
 
             # Ask if user wants to delete the merged correspondents
@@ -471,7 +482,7 @@ class PaperlessCorrespondentManager:
             )
             return
 
-        print(f"\\nFound {len(empty_correspondents)} correspondents with no documents:")
+        print(f"\nFound {len(empty_correspondents)} correspondents with no documents:")
         print("=" * 80)
 
         for i, correspondent in enumerate(empty_correspondents, 1):
@@ -529,7 +540,7 @@ class PaperlessCorrespondentManager:
                     deleted_count += 1
 
         print(
-            f"\\nDeleted {deleted_count} out of {len(empty_correspondents)} empty correspondents."
+            f"\nDeleted {deleted_count} out of {len(empty_correspondents)} empty correspondents."
         )
         return deleted_count
 
@@ -553,13 +564,13 @@ class PaperlessCorrespondentManager:
             return 0
 
         print(
-            f"\\nFound {len(similar_groups)} groups of similar correspondents (threshold: {threshold}):"
+            f"\nFound {len(similar_groups)} groups of similar correspondents (threshold: {threshold}):"
         )
         print("=" * 80)
 
         merged_count = 0
         for i, group in enumerate(similar_groups, 1):
-            print(f"\\n--- Group {i} of {len(similar_groups)} ---")
+            print(f"\n--- Group {i} of {len(similar_groups)} ---")
             print("Similar correspondents found:")
 
             # Display all correspondents in the group with indices
@@ -577,7 +588,7 @@ class PaperlessCorrespondentManager:
                 try:
                     choice = (
                         input(
-                            f"\\nWhich correspondent should be kept as the target? (1-{len(group)}, 's' to skip, 'q' to quit): "
+                            f"\nWhich correspondent should be kept as the target? (1-{len(group)}, 's' to skip, 'q' to quit): "
                         )
                         .strip()
                         .lower()
@@ -596,7 +607,7 @@ class PaperlessCorrespondentManager:
                         target_id = target_correspondent["id"]
 
                         print(
-                            f"\\nSelected '{target_correspondent['name']}' (ID: {target_id}) as the target."
+                            f"\nSelected '{target_correspondent['name']}' (ID: {target_id}) as the target."
                         )
                         print("Will merge these correspondents into the target:")
 
@@ -608,10 +619,10 @@ class PaperlessCorrespondentManager:
 
                         # Confirm this specific merge
                         confirm = input(
-                            f"\\nProceed with merging {len(sources_to_merge)} correspondents into '{target_correspondent['name']}'? (y/N): "
+                            f"\nProceed with merging {len(sources_to_merge)} correspondents into '{target_correspondent['name']}'? (y/N): "
                         )
                         if confirm.lower() == "y":
-                            print(f"\\n--- Merging Group {i} ---")
+                            print(f"\n--- Merging Group {i} ---")
                             if self.merge_correspondent_group(group, target_id):
                                 merged_count += 1
                                 print(f"Successfully merged group {i}")
@@ -629,7 +640,7 @@ class PaperlessCorrespondentManager:
                         f"Please enter a number between 1 and {len(group)}, 's' to skip, or 'q' to quit."
                     )
 
-        print("\\n=== Merge Summary ===")
+        print("\n=== Merge Summary ===")
         print(
             f"Successfully merged {merged_count} out of {len(similar_groups)} groups."
         )
@@ -685,7 +696,7 @@ class PaperlessCorrespondentManager:
             return
 
         corr = diagnosis["correspondent"]
-        print("\\n=== Correspondent Diagnosis ===")
+        print("\n=== Correspondent Diagnosis ===")
         print(f"ID: {corr['id']}")
         print(f"Name: '{corr['name']}'")
         print(f"Document Count: {diagnosis['document_count']}")
@@ -694,7 +705,7 @@ class PaperlessCorrespondentManager:
         if corr.get("last_correspondence"):
             print(f"Last Correspondence: {corr['last_correspondence']}")
 
-        print("\\n--- Recent Documents (showing first 10) ---")
+        print("\n--- Recent Documents (showing first 10) ---")
         for i, doc in enumerate(diagnosis["detailed_documents"][:10], 1):
             print(f"{i:>2}. ID: {doc['id']:>5} | Title: {doc.get('title', 'N/A')}")
             print(f"     | Created: {doc.get('created', 'N/A')}")
@@ -768,7 +779,7 @@ class PaperlessCorrespondentManager:
         return success
 
     def find_documents_by_date_range(
-        self, start_date: str = None, end_date: str = None
+        self, start_date: str | None = None, end_date: str | None = None
     ) -> list[dict]:
         """
         Find documents within a date range to help identify incorrectly assigned documents.

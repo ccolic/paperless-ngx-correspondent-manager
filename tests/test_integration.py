@@ -39,7 +39,6 @@ class TestManagerIntegration:
             if "/api/correspondents/" in url:
                 # Remove query parameters for matching
                 url_base = url.split("?")[0]
-                print(f"DEBUG: session_get_side_effect url_base={url_base}")
                 import re
 
                 match = re.match(r".*/api/correspondents/(\d+)(/)?$", url_base)
@@ -193,8 +192,6 @@ class TestManagerIntegration:
         assert "detailed_documents" in diagnosis
 
         correspondent = diagnosis["correspondent"]
-        if "id" not in correspondent:
-            print("Diagnosis output:", diagnosis)
         assert "id" in correspondent, f"Diagnosis missing 'id': {diagnosis}"
         assert correspondent["id"] == 1
         assert correspondent["name"] == "John Doe"
