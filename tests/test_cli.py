@@ -403,7 +403,7 @@ class TestMergeCommand:
 
         assert result.exit_code == 0
         assert "Target correspondent: John Doe" in result.output
-        mock_manager.merge_correspondents.assert_called_once_with(1, 2)
+        mock_manager.merge_correspondents.assert_called_once_with(2, 1)
 
     def test_merge_command_cancelled(
         self, cli_runner, sample_correspondents, test_env_vars

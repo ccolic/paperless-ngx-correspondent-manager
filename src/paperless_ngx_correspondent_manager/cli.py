@@ -177,7 +177,7 @@ def merge(ctx, correspondent_ids):
 
     if click.confirm("Proceed with merge?"):
         for source_id in source_ids:
-            manager.merge_correspondents(target_id, source_id)
+            manager.merge_correspondents(source_id, target_id)
     else:
         click.echo("Merge cancelled.")
 
