@@ -3,7 +3,7 @@
 A CLI utility to manage paperless-ngx correspondents.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Christian Colic"
 __email__ = "christian@colic.io"
 
